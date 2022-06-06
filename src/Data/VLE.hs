@@ -21,10 +21,9 @@ instance Serialize VLEWord64 where
 
 variableLengthEncode :: Putter Word64
 variableLengthEncode x
-  | x < 0x80 = putByte $ fromIntegral x
-  | otherwise = do
-    putByte $ fromIntegral $ (x .&. 0x7F) .|. 0x80
-    variableLengthEncode $ x `shiftR` 7
+  | x < 0x80  = putByte $ fromIntegral x
+  | otherwise = do  putByte $ fromIntegral $ (x .&. 0x7F) .|. 0x80
+                    variableLengthEncode $ x `shiftR` 7
 
 variableLengthDecode :: Get Word64
 variableLengthDecode = go 0 0
