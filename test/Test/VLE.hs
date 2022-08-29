@@ -120,6 +120,19 @@ spec_DecodeFailsOnNotEnoughInput =
       runGet variableLengthDecode (B.pack [0xFF]) `shouldBe`
       Left "too few bytes\nFrom:\tdemandInput\n\n"
 
+spec_DifferenceDecodeIsEncodeInverse :: Spec
+spec_DifferenceDecodeIsEncodeInverse =
+  describe "Difference decode inverts difference encoding" $ do
+    it "differenceDecode $ differenceEncode [] = []" $
+      runGet differenceDecode (runPut $ differenceEncode []) `shouldBe`
+      Right []
+    it "differenceDecode $ differenceEncode [42] = [42]" $
+      runGet differenceDecode (runPut $ differenceEncode [42]) `shouldBe`
+      Right [42]
+    it "differenceDecode $ differenceEncode [1,2,3,4] = [1,2,3,4]" $
+      runGet differenceDecode (runPut $ differenceEncode [1,2,3,4]) `shouldBe`
+      Right [1,2,3,4]
+
 specs :: Spec
 specs =
   describe "VLE" $ do
@@ -128,3 +141,4 @@ specs =
     spec_EncodeIsDecodePseudoInverse
     spec_DecodeFailsOnOverflow
     spec_DecodeFailsOnNotEnoughInput
+    spec_DifferenceDecodeIsEncodeInverse
