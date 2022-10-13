@@ -31,9 +31,9 @@ spec_EncodesCorrectLengths =
       B.length (runPut $ variableLengthEncode 2097152) `shouldBe` 4
     it "encodes 9223372036854775807 in 9 bytes" $
       B.length (runPut $ variableLengthEncode 9223372036854775807) `shouldBe` 9
-    it "encodes 9223372036854775808 in 10 bytes" $
+    it "encodes 9223372036854775808 in 1 byte" $
       B.length (runPut $ variableLengthEncode 9223372036854775808) `shouldBe` 10
-    it "encodes 18446744073709551615 in 10 bytes" $
+    it "encodes 18446744073709551615 in 1 bytes" $
       B.length (runPut $ variableLengthEncode 18446744073709551615) `shouldBe` 10
 
 spec_DecodeIsEncodeInverse :: Spec
@@ -43,16 +43,18 @@ spec_DecodeIsEncodeInverse =
       runGet variableLengthDecode (runPut $ variableLengthEncode 0) `shouldBe` Right 0
     it "decode $ encode 1 == 1" $
       runGet variableLengthDecode (runPut $ variableLengthEncode 1) `shouldBe` Right 1
-    it "decode $ encode x == x for arbitrary x (1 of 5)" $
+    it "decode $ encode x == x for arbitrary x (1 of 6)" $
       runGet variableLengthDecode (runPut $ variableLengthEncode 3912837192) `shouldBe` Right 3912837192
-    it "decode $ encode x == x for arbitrary x (2 of 5)" $
+    it "decode $ encode x == x for arbitrary x (2 of 6)" $
       runGet variableLengthDecode (runPut $ variableLengthEncode 6636238866704895954) `shouldBe` Right 6636238866704895954
-    it "decode $ encode x == x for arbitrary x (3 of 5)" $
+    it "decode $ encode x == x for arbitrary x (3 of 6)" $
       runGet variableLengthDecode (runPut $ variableLengthEncode 5280046270) `shouldBe` Right 5280046270
-    it "decode $ encode x == x for arbitrary x (4 of 5)" $
+    it "decode $ encode x == x for arbitrary x (4 of 6)" $
       runGet variableLengthDecode (runPut $ variableLengthEncode 8259000208452) `shouldBe` Right 8259000208452
-    it "decode $ encode x == x for arbitrary x (5 of 5)" $
+    it "decode $ encode x == x for arbitrary x (5 of 6)" $
       runGet variableLengthDecode (runPut $ variableLengthEncode 2824375) `shouldBe` Right 2824375
+    it "decode $ encode x == x for arbitrary x (6 of 6)" $
+      fromIntegral <$> runGet variableLengthDecode (runPut $ variableLengthEncode (-1)) `shouldBe` Right ((-1) :: Integer)
 
 spec_EncodeIsDecodePseudoInverse :: Spec
 spec_EncodeIsDecodePseudoInverse =
